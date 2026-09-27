@@ -1,0 +1,567 @@
+local TweenService = game:GetService("TweenService")
+local Players = game:GetService("Players")
+local Lighting = game:GetService("Lighting")
+
+local player = Players.LocalPlayer
+local playerGui = player:WaitForChild("PlayerGui")
+
+local IMAGE_ID = "rbxassetid://96530322553399"
+
+local TITLE_TEXT = "เลือกตัวเลือกของคุณ"
+local DESC_TEXT = "กรุณาเลือกหนึ่งในตัวเลือกด้านล่าง"
+
+local OPTION_1_TEXT = "Brookhaven RP"
+local OPTION_2_TEXT = "Brookhaven Boombox"
+
+local OPTION_1_URL = "https://raw.githubusercontent.com/LoaderHub1990/OBF-SRC-PRO-MAX/refs/heads/main/Brookhaven%20RP"
+local OPTION_2_URL = "https://raw.githubusercontent.com/LoaderHub1990/OBF-SCRIPT-ALL/refs/heads/main/F!exozy%20BoomBox%20Brookhaven%20RP"
+
+local old = playerGui:FindFirstChild("CustomChoiceUI")
+if old then
+    old:Destroy()
+end
+
+local oldBlur = Lighting:FindFirstChild("CustomChoiceBlur")
+if oldBlur then
+    oldBlur:Destroy()
+end
+
+local blur = Instance.new("BlurEffect")
+blur.Name = "CustomChoiceBlur"
+blur.Size = 0
+blur.Parent = Lighting
+
+TweenService:Create(
+    blur,
+    TweenInfo.new(0.35),
+    {Size = 18}
+):Play()
+
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "CustomChoiceUI"
+screenGui.ResetOnSpawn = false
+screenGui.IgnoreGuiInset = true
+screenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+screenGui.DisplayOrder = 50
+screenGui.Parent = playerGui
+
+local overlay = Instance.new("TextButton")
+overlay.Name = "Overlay"
+overlay.Text = ""
+overlay.AutoButtonColor = false
+overlay.Size = UDim2.fromScale(1, 1)
+overlay.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+overlay.BackgroundTransparency = 1
+overlay.ZIndex = 1
+overlay.Parent = screenGui
+
+local main = Instance.new("Frame")
+main.Name = "Main"
+main.AnchorPoint = Vector2.new(0.5, 0.5)
+main.Position = UDim2.fromScale(0.5, 0.5)
+main.Size = UDim2.fromOffset(0, 0)
+main.BackgroundColor3 = Color3.fromRGB(12, 14, 20)
+main.BorderSizePixel = 0
+main.ClipsDescendants = false
+main.ZIndex = 2
+main.Parent = screenGui
+
+local mainCorner = Instance.new("UICorner")
+mainCorner.CornerRadius = UDim.new(0, 20)
+mainCorner.Parent = main
+
+local mainStroke = Instance.new("UIStroke")
+mainStroke.Color = Color3.fromRGB(90, 170, 255)
+mainStroke.Thickness = 1.5
+mainStroke.Transparency = 0.5
+mainStroke.Parent = main
+
+local bgGradient = Instance.new("UIGradient")
+bgGradient.Color = ColorSequence.new({
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(22, 26, 36)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(8, 9, 13))
+})
+bgGradient.Rotation = 90
+bgGradient.Parent = main
+
+local scale = Instance.new("UIScale")
+scale.Scale = 1
+scale.Parent = main
+
+local mainPadding = Instance.new("UIPadding")
+mainPadding.PaddingTop = UDim.new(0, 20)
+mainPadding.PaddingBottom = UDim.new(0, 20)
+mainPadding.PaddingLeft = UDim.new(0, 24)
+mainPadding.PaddingRight = UDim.new(0, 24)
+mainPadding.Parent = main
+
+local closeBtn = Instance.new("TextButton")
+closeBtn.Name = "CloseButton"
+closeBtn.AnchorPoint = Vector2.new(1, 0)
+closeBtn.Position = UDim2.new(1, 0, 0, 0)
+closeBtn.Size = UDim2.fromOffset(32, 32)
+closeBtn.BackgroundColor3 = Color3.fromRGB(24, 27, 36)
+closeBtn.Text = "×"
+closeBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+closeBtn.TextSize = 20
+closeBtn.Font = Enum.Font.GothamBold
+closeBtn.AutoButtonColor = false
+closeBtn.ZIndex = 5
+closeBtn.Parent = main
+
+local closeCorner = Instance.new("UICorner")
+closeCorner.CornerRadius = UDim.new(1, 0)
+closeCorner.Parent = closeBtn
+
+local imageHolder = Instance.new("Frame")
+imageHolder.Name = "ImageHolder"
+imageHolder.AnchorPoint = Vector2.new(0.5, 0)
+imageHolder.Position = UDim2.new(0.5, 0, 0, 14)
+imageHolder.Size = UDim2.fromOffset(86, 86)
+imageHolder.BackgroundColor3 = Color3.fromRGB(20, 23, 32)
+imageHolder.ZIndex = 3
+imageHolder.Parent = main
+
+local imgHolderCorner = Instance.new("UICorner")
+imgHolderCorner.CornerRadius = UDim.new(0, 16)
+imgHolderCorner.Parent = imageHolder
+
+local imgHolderStroke = Instance.new("UIStroke")
+imgHolderStroke.Color = Color3.fromRGB(90, 170, 255)
+imgHolderStroke.Transparency = 0.4
+imgHolderStroke.Thickness = 1.5
+imgHolderStroke.Parent = imageHolder
+
+local image = Instance.new("ImageLabel")
+image.Name = "PreviewImage"
+image.Image = IMAGE_ID
+image.Size = UDim2.fromScale(1, 1)
+image.BackgroundTransparency = 1
+image.ScaleType = Enum.ScaleType.Crop
+image.ZIndex = 4
+image.Parent = imageHolder
+
+local imgCorner = Instance.new("UICorner")
+imgCorner.CornerRadius = UDim.new(0, 16)
+imgCorner.Parent = image
+
+task.spawn(function()
+    while imageHolder.Parent do
+        local up = TweenService:Create(
+            imageHolder,
+            TweenInfo.new(1.4, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut),
+            {Position = UDim2.new(0.5, 0, 0, 8)}
+        )
+
+        up:Play()
+        up.Completed:Wait()
+
+        if not imageHolder.Parent then
+            break
+        end
+
+        local down = TweenService:Create(
+            imageHolder,
+            TweenInfo.new(1.4, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut),
+            {Position = UDim2.new(0.5, 0, 0, 14)}
+        )
+
+        down:Play()
+        down.Completed:Wait()
+    end
+end)
+
+local title = Instance.new("TextLabel")
+title.Name = "Title"
+title.Position = UDim2.new(0.5, 0, 0, 112)
+title.AnchorPoint = Vector2.new(0.5, 0)
+title.Size = UDim2.new(1, -20, 0, 30)
+title.BackgroundTransparency = 1
+title.Text = TITLE_TEXT
+title.TextColor3 = Color3.fromRGB(255, 255, 255)
+title.TextSize = 22
+title.Font = Enum.Font.GothamBold
+title.TextWrapped = true
+title.TextXAlignment = Enum.TextXAlignment.Center
+title.ZIndex = 3
+title.Parent = main
+
+local desc = Instance.new("TextLabel")
+desc.Name = "Description"
+desc.Position = UDim2.new(0.5, 0, 0, 148)
+desc.AnchorPoint = Vector2.new(0.5, 0)
+desc.Size = UDim2.new(1, -10, 0, 36)
+desc.BackgroundTransparency = 1
+desc.Text = DESC_TEXT
+desc.TextColor3 = Color3.fromRGB(190, 195, 210)
+desc.TextSize = 14
+desc.Font = Enum.Font.Gotham
+desc.TextWrapped = true
+desc.TextXAlignment = Enum.TextXAlignment.Center
+desc.ZIndex = 3
+desc.Parent = main
+
+local btnContainer = Instance.new("Frame")
+btnContainer.Name = "ButtonContainer"
+btnContainer.BackgroundTransparency = 1
+btnContainer.Position = UDim2.new(0.5, 0, 0, 200)
+btnContainer.AnchorPoint = Vector2.new(0.5, 0)
+btnContainer.Size = UDim2.new(1, 0, 0, 56)
+btnContainer.ZIndex = 3
+btnContainer.Parent = main
+
+local listLayout = Instance.new("UIListLayout")
+listLayout.SortOrder = Enum.SortOrder.LayoutOrder
+listLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+listLayout.VerticalAlignment = Enum.VerticalAlignment.Center
+listLayout.Padding = UDim.new(0, 12)
+listLayout.Parent = btnContainer
+
+local function createButton(name, text, filled)
+    local btn = Instance.new("TextButton")
+
+    btn.Name = name
+    btn.Size = UDim2.fromOffset(180, 56)
+    btn.Text = text
+    btn.TextColor3 = filled
+        and Color3.fromRGB(10, 12, 18)
+        or Color3.fromRGB(255, 255, 255)
+
+    btn.TextSize = 16
+    btn.Font = Enum.Font.GothamBold
+    btn.AutoButtonColor = false
+    btn.ZIndex = 3
+    btn.ClipsDescendants = true
+    btn.Parent = btnContainer
+
+    local corner = Instance.new("UICorner")
+    corner.CornerRadius = UDim.new(0, 14)
+    corner.Parent = btn
+
+    if filled then
+        btn.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+
+        local grad = Instance.new("UIGradient")
+        grad.Color = ColorSequence.new({
+            ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 255, 255)),
+            ColorSequenceKeypoint.new(1, Color3.fromRGB(190, 220, 255))
+        })
+        grad.Rotation = 90
+        grad.Parent = btn
+    else
+        btn.BackgroundColor3 = Color3.fromRGB(20, 23, 32)
+
+        local stroke = Instance.new("UIStroke")
+        stroke.Color = Color3.fromRGB(90, 170, 255)
+        stroke.Transparency = 0.3
+        stroke.Thickness = 1.5
+        stroke.Parent = btn
+    end
+
+    return btn
+end
+
+local option1Btn = createButton("Option1", OPTION_1_TEXT, false)
+local option2Btn = createButton("Option2", OPTION_2_TEXT, true)
+
+local statusLabel = Instance.new("TextLabel")
+statusLabel.Name = "Status"
+statusLabel.Position = UDim2.new(0.5, 0, 0, 266)
+statusLabel.AnchorPoint = Vector2.new(0.5, 0)
+statusLabel.Size = UDim2.new(1, 0, 0, 24)
+statusLabel.BackgroundTransparency = 1
+statusLabel.Text = ""
+statusLabel.TextTransparency = 1
+statusLabel.TextColor3 = Color3.fromRGB(150, 210, 255)
+statusLabel.TextSize = 14
+statusLabel.Font = Enum.Font.GothamMedium
+statusLabel.ZIndex = 3
+statusLabel.Parent = main
+
+local closed = false
+
+local function updateResponsive()
+    local camera = workspace.CurrentCamera
+    if not camera then
+        return
+    end
+
+    local viewport = camera.ViewportSize
+    local width = viewport.X
+    local height = viewport.Y
+    local mobile = width <= 600
+
+    if mobile then
+        main.Size = UDim2.fromOffset(
+            math.clamp(width - 30, 280, 390),
+            math.clamp(height - 80, 330, 390)
+        )
+
+        scale.Scale = math.clamp(width / 430, 0.78, 0.95)
+
+        btnContainer.Size = UDim2.new(1, -10, 0, 122)
+        btnContainer.Position = UDim2.new(0.5, 0, 0, 198)
+
+        listLayout.FillDirection = Enum.FillDirection.Vertical
+        listLayout.Padding = UDim.new(0, 10)
+
+        option1Btn.Size = UDim2.new(1, -20, 0, 52)
+        option2Btn.Size = UDim2.new(1, -20, 0, 52)
+
+        title.TextSize = 20
+        desc.TextSize = 13
+        statusLabel.Position = UDim2.new(0.5, 0, 0, 330)
+    else
+        main.Size = UDim2.fromOffset(
+            math.clamp(width * 0.34, 420, 520),
+            400
+        )
+
+        scale.Scale = math.clamp(width / 1200, 0.95, 1.08)
+
+        btnContainer.Size = UDim2.new(1, 0, 0, 56)
+        btnContainer.Position = UDim2.new(0.5, 0, 0, 200)
+
+        listLayout.FillDirection = Enum.FillDirection.Horizontal
+        listLayout.Padding = UDim.new(0, 16)
+
+        option1Btn.Size = UDim2.fromOffset(180, 56)
+        option2Btn.Size = UDim2.fromOffset(180, 56)
+
+        title.TextSize = 22
+        desc.TextSize = 14
+        statusLabel.Position = UDim2.new(0.5, 0, 0, 266)
+    end
+end
+
+local function closeUI()
+    if closed then
+        return
+    end
+
+    closed = true
+
+    TweenService:Create(
+        main,
+        TweenInfo.new(0.25, Enum.EasingStyle.Back, Enum.EasingDirection.In),
+        {Size = UDim2.fromOffset(0, 0)}
+    ):Play()
+
+    TweenService:Create(
+        overlay,
+        TweenInfo.new(0.25),
+        {BackgroundTransparency = 1}
+    ):Play()
+
+    TweenService:Create(
+        blur,
+        TweenInfo.new(0.3),
+        {Size = 0}
+    ):Play()
+
+    task.delay(0.3, function()
+        if screenGui then
+            screenGui:Destroy()
+        end
+
+        if blur and blur.Parent then
+            blur:Destroy()
+        end
+    end)
+end
+
+local function loadExternal(url, name)
+    if closed then
+        return
+    end
+
+    statusLabel.Text = "กำลังโหลด " .. name .. "..."
+
+    TweenService:Create(
+        statusLabel,
+        TweenInfo.new(0.2),
+        {TextTransparency = 0}
+    ):Play()
+
+    task.spawn(function()
+        local success, result = pcall(function()
+            local source = game:HttpGet(url)
+            local func, err = loadstring(source)
+
+            if not func then
+                error(err or "ไม่สามารถโหลดสคริปต์ได้")
+            end
+
+            return func()
+        end)
+
+        if not success then
+            warn("โหลดสคริปต์ไม่สำเร็จ:", result)
+
+            if statusLabel.Parent then
+                statusLabel.Text = "โหลดไม่สำเร็จ"
+            end
+
+            return
+        end
+
+        if statusLabel.Parent then
+            statusLabel.Text = "โหลด " .. name .. " สำเร็จ"
+        end
+
+        task.delay(0.5, closeUI)
+    end)
+end
+
+local function setupButtonEffects(btn, resultText, url)
+    local originalSize = btn.Size
+
+    btn.MouseEnter:Connect(function()
+        if closed then
+            return
+        end
+
+        TweenService:Create(
+            btn,
+            TweenInfo.new(0.15, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+            {Rotation = -2}
+        ):Play()
+    end)
+
+    btn.MouseLeave:Connect(function()
+        if closed then
+            return
+        end
+
+        TweenService:Create(
+            btn,
+            TweenInfo.new(0.15, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+            {
+                Rotation = 0,
+                Size = originalSize
+            }
+        ):Play()
+    end)
+
+    btn.MouseButton1Down:Connect(function()
+        if closed then
+            return
+        end
+
+        TweenService:Create(
+            btn,
+            TweenInfo.new(0.08),
+            {Size = originalSize - UDim2.fromOffset(6, 3)}
+        ):Play()
+    end)
+
+    btn.MouseButton1Click:Connect(function()
+        if closed then
+            return
+        end
+
+        TweenService:Create(
+            mainStroke,
+            TweenInfo.new(0.15),
+            {
+                Color = Color3.fromRGB(120, 200, 255),
+                Transparency = 0
+            }
+        ):Play()
+
+        loadExternal(url, resultText)
+    end)
+end
+
+setupButtonEffects(
+    option1Btn,
+    OPTION_1_TEXT,
+    OPTION_1_URL
+)
+
+setupButtonEffects(
+    option2Btn,
+    OPTION_2_TEXT,
+    OPTION_2_URL
+)
+
+closeBtn.MouseButton1Click:Connect(closeUI)
+overlay.MouseButton1Click:Connect(closeUI)
+
+closeBtn.MouseEnter:Connect(function()
+    if closed then
+        return
+    end
+
+    TweenService:Create(
+        closeBtn,
+        TweenInfo.new(0.15),
+        {
+            BackgroundColor3 = Color3.fromRGB(220, 60, 60),
+            Rotation = 90
+        }
+    ):Play()
+end)
+
+closeBtn.MouseLeave:Connect(function()
+    if closed then
+        return
+    end
+
+    TweenService:Create(
+        closeBtn,
+        TweenInfo.new(0.15),
+        {
+            BackgroundColor3 = Color3.fromRGB(24, 27, 36),
+            Rotation = 0
+        }
+    ):Play()
+end)
+
+local camera = workspace.CurrentCamera
+
+if camera then
+    camera:GetPropertyChangedSignal("ViewportSize"):Connect(updateResponsive)
+end
+
+updateResponsive()
+
+TweenService:Create(
+    overlay,
+    TweenInfo.new(0.3),
+    {BackgroundTransparency = 0.5}
+):Play()
+
+local initialWidth = 460
+local initialHeight = 400
+
+if camera and camera.ViewportSize.X <= 600 then
+    initialWidth = math.clamp(
+        camera.ViewportSize.X - 30,
+        280,
+        390
+    )
+
+    initialHeight = math.clamp(
+        camera.ViewportSize.Y - 80,
+        330,
+        390
+    )
+end
+
+main.Size = UDim2.fromOffset(0, 0)
+
+TweenService:Create(
+    main,
+    TweenInfo.new(
+        0.4,
+        Enum.EasingStyle.Back,
+        Enum.EasingDirection.Out
+    ),
+    {
+        Size = UDim2.fromOffset(
+            initialWidth,
+            initialHeight
+        )
+    }
+):Play()
